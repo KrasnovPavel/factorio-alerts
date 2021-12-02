@@ -17,6 +17,15 @@ data:extend({
         name = "alerts-list-show-percentage",
         setting_type = "runtime-per-user",
         default_value = false,
-        order = "ad"
-    }
+        order = "ab"
+    },
+	{
+        type = "int-setting",
+        name = "alerts-list-columns-for-compact-mode",
+        setting_type = "runtime-per-user",
+        default_value = 4,
+		minimum_value = 1,
+		maximum_value = 64,
+        order = "ac"
+    },
 })

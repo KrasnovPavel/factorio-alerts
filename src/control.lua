@@ -1,11 +1,9 @@
-
-
 -- initial settings, before we load them for player
 local display_mode = "alerts-list-display-mode-icon-only"
 local show_percentage = false
+local columns_for_compact_mode = 4
 
 local REFRESH_RATE = 60
-local COLUMNS_FOR_COMPACT_MODE = 4
 local ZOOM_LEVEL = 0.1
 
 function format_guielement_name(prefix, surface, pos)
@@ -99,7 +97,7 @@ function get_signal_value(signals, signalid)
     return value
 end
 
-function left_column_for(tbl, speaker, circuit, show_percentage)
+function left_column_for(tbl, speaker, circuit)
     local elem_name = format_guielement_name('alerts_list_icons_', speaker.surface, speaker.position)
     local element = tbl[elem_name]
     if display_mode == 'alerts-list-display-mode-icon-only' or display_mode == 'alerts-list-display-mode-icon-and-text' then
@@ -125,7 +123,7 @@ function left_column_for(tbl, speaker, circuit, show_percentage)
     -- update element data
 end
 
-function right_column_for(tbl, speaker, circuit, display_mode)
+function right_column_for(tbl, speaker, circuit)
     if display_mode ~= 'alerts-list-display-mode-icon-only' then
         local elem_name = format_guielement_name('alerts_list_info_', speaker.surface, speaker.position)
         local element = tbl[elem_name]
@@ -158,8 +156,6 @@ function fill_table_with_speakers(tbl, speakers, player)
     end
 
     local found_any = false
-    local display_mode = settings.get_player_settings(player)['alerts-list-display-mode'].value
-    local show_percentage = settings.get_player_settings(player)['alerts-list-show-percentage'].value
 
     for i, speaker in pairs(speakers) do
         -- here we do assume we always have a list of speakers that have global alert set
@@ -168,8 +164,8 @@ function fill_table_with_speakers(tbl, speakers, player)
             if behavior and behavior['circuit_condition'] then
                 if behavior.circuit_condition.fulfilled and speaker.alert_parameters.icon_signal_id then
                     found_any = true
-                    left_column_for(tbl, speaker, behavior.circuit_condition, show_percentage)
-                    right_column_for(tbl, speaker, behavior.circuit_condition, display_mode)
+                    left_column_for(tbl, speaker, behavior.circuit_condition)
+                    right_column_for(tbl, speaker, behavior.circuit_condition)
                     remove_list[format_guielement_name('alerts_list_icons_', speaker.surface, speaker.position)] = nil
                     remove_list[format_guielement_name('alerts_list_info_', speaker.surface, speaker.position)] = nil
                 end
@@ -194,11 +190,11 @@ function build_gui(player) -- return GUI
     if not player.gui.left['alerts_list_frame_main'] then
         -- TODO: make it transparent background?
         local gui = player.gui.left.add {type='frame', name = 'alerts_list_frame_main', direction = 'vertical'}
-        gui.add { type = 'label', name = 'alerts_list_label', caption = {'gui-alerts-list.label-caption'}, tooltip = {'tooltip-alerts-list.label-caption'} }
         local columns = 2
-        if settings.get_player_settings(player)['alerts-list-display-mode'].value == 'alerts-list-display-mode-icon-only' then
-            columns = COLUMNS_FOR_COMPACT_MODE
+        if display_mode == 'alerts-list-display-mode-icon-only' then
+            columns = columns_for_compact_mode
         end
+        gui.add { type = 'label', name = 'alerts_list_label', caption = {'gui-alerts-list.label-caption'}, tooltip = {'tooltip-alerts-list.label-caption'} }
         local tbl = gui.add { type = 'table', name = 'alerts_list_alert_table', column_count = columns }
         return gui
     else
@@ -216,6 +212,10 @@ end
 function reload_settings(player)
     refresh_speakers()
  
+    display_mode = settings.get_player_settings(player)['alerts-list-display-mode'].value
+    show_percentage = settings.get_player_settings(player)['alerts-list-show-percentage'].value
+	columns_for_compact_mode = settings.get_player_settings(player)['alerts-list-columns-for-compact-mode'].value
+
     if player.gui.left['alerts_list_frame_main'] then
         player.gui.left['alerts_list_frame_main'].destroy()
     end
