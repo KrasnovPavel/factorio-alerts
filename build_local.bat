@@ -1,6 +1,9 @@
-del versions\AlertsList2_1.2.0.zip
+set modName="AlertsList2"
+set version="1.2.1"
+
+del versions\%modName%_%version%.zip
 cd src
-xcopy *.* ..\versions\AlertsList2_1.2.0 /s /y
+xcopy *.* ..\versions\%modName%_%version% /s /y
 cd ..\versions
-"C:\Program Files\7-Zip\7z" a AlertsList2_1.2.0.zip AlertsList2_1.2.0\*.* -r
+"C:\Program Files\7-Zip\7z" a %modName%_%version%.zip %modName%_%version%\*.* -r
 pause
