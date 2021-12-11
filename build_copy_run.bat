@@ -11,3 +11,14 @@ if NOT ["%errorlevel%"]==["0"] (
     pause
     exit /b %errorlevel%
 )
+
+copy %modName%_%version%.zip C:\Spiele\Factorio_NonSteam\mods_test /y
+
+c:
+cd C:\Spiele\Factorio_NonSteam\bin\x64\
+call Factorio_local_mods_test.bat
+
+if NOT ["%errorlevel%"]==["0"] (
+    pause
+    exit /b %errorlevel%
+)
