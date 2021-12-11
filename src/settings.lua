@@ -5,10 +5,13 @@ data:extend({
         setting_type = "runtime-per-user",
         default_value = "alerts-list-display-mode-icon-only",
         allowed_values = {
-            "alerts-list-display-mode-icon-only",                   -- show only icon
-            "alerts-list-display-mode-icon-and-text",               -- show both icon and notification text
+            -- show only icon
+            "alerts-list-display-mode-icon-only",                   
+            -- show both icon and notification text
+            "alerts-list-display-mode-icon-and-text",               
             -- TODO: nice idea to implement LATER ON
-            -- "alerts-list-display-mode-condition-and-text"            -- show both text and circuit condition that triggered it with both values
+            -- show both text and circuit condition that triggered it with both values
+            -- "alerts-list-display-mode-condition-and-text"            
         },
         order = "aa"
     },
@@ -27,5 +30,14 @@ data:extend({
 		minimum_value = 1,
 		maximum_value = 64,
         order = "ac"
+    },
+	{
+        type = "int-setting",
+        name = "alerts-list-refresh-rate",
+        setting_type = "startup",
+        default_value = 60,
+		minimum_value = 1,
+		maximum_value = 6000,
+        order = "ad"
     },
 })

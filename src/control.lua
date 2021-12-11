@@ -1,9 +1,9 @@
--- initial settings, before we load them for player
+-- initial settings, before loading them
 local display_mode = "alerts-list-display-mode-icon-only"
 local show_percentage = false
 local columns_for_compact_mode = 4
 
-local REFRESH_RATE = 60
+-- constants
 local ZOOM_LEVEL = 0.1
 
 function format_guielement_name(prefix, surface, pos)
@@ -186,7 +186,8 @@ function fill_table_with_speakers(tbl, speakers, player)
     end
 end
 
-function build_gui(player) -- return GUI
+-- return GUI
+function build_gui(player) 
     if not player.gui.left['alerts_list_frame_main'] then
         -- TODO: make it transparent background?
         local gui = player.gui.left.add {type='frame', name = 'alerts_list_frame_main', direction = 'vertical'}
@@ -210,8 +211,6 @@ function draw_gui(player)
 end
 
 function reload_settings(player)
-    refresh_speakers()
- 
     display_mode = settings.get_player_settings(player)['alerts-list-display-mode'].value
     show_percentage = settings.get_player_settings(player)['alerts-list-show-percentage'].value
 	columns_for_compact_mode = settings.get_player_settings(player)['alerts-list-columns-for-compact-mode'].value
@@ -219,46 +218,48 @@ function reload_settings(player)
     if player.gui.left['alerts_list_frame_main'] then
         player.gui.left['alerts_list_frame_main'].destroy()
     end
+
     draw_gui(player)
 end
 
--- Link to events
+-- register events
 
 script.on_init(function()
+    for k,player in pairs(game.players) do
+        reload_settings(player)
+    end
+
     if not global['speaker_cache'] then
         global['speaker_cache'] = {}
     end
     refresh_speakers()
-    for k,player in pairs(game.players) do
-        reload_settings(player)
-    end
 end)
 
 script.on_configuration_changed(function()
+    for k,player in pairs(game.players) do
+        reload_settings(player)
+    end
+
     if not global['speaker_cache'] then
         global['speaker_cache'] = {}
     end
     refresh_speakers()
-    for k,player in pairs(game.players) do
-        reload_settings(player)
-    end
 end)
 
-script.on_event(defines.events.on_tick, function(e)
-    if e.tick % REFRESH_RATE == 0 then
-        for k,player in pairs(game.players) do
-            draw_gui(player)
-        end
+script.on_nth_tick(settings.startup['alerts-list-refresh-rate'].value, function(e)
+    for k,player in pairs(game.players) do
+        draw_gui(player)
     end
 end)
 
 script.on_event(defines.events.on_player_joined_game, function(e)
-    if not global['speaker_cache'] then
-        global['speaker_cache'] = {}
-        refresh_speakers()
-    end
     local player = game.players[e.player_index]
     reload_settings(player)
+
+    if not global['speaker_cache'] then
+        global['speaker_cache'] = {}
+    end
+    refresh_speakers()
 end)
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(e)
