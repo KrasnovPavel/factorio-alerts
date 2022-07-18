@@ -159,7 +159,7 @@ function fill_table_with_speakers(tbl, speakers, player)
 
     for i, speaker in pairs(speakers) do
         -- here we do assume we always have a list of speakers that have global alert set
-        if speaker and speaker.valid and speaker.alert_parameters then
+        if speaker and speaker.valid and speaker.alert_parameters and speaker.alert_parameters.show_alert then
             local behavior = speaker.get_control_behavior()
             if behavior and behavior['circuit_condition'] then
                 if behavior.circuit_condition.fulfilled and speaker.alert_parameters.icon_signal_id then
