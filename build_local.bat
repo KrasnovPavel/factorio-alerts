@@ -1,5 +1,5 @@
 set modName="AlertsList2"
-set version="1.3.1"
+set version="1.3.2"
 
 del versions\%modName%_%version%.zip
 cd src
