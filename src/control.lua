@@ -146,11 +146,15 @@ function right_column_for(tbl, speaker, circuit)
 end
 
 function on_click(element, player)
-    if starts_with(element.name, "alerts_list_icons_") then
-        for k, speaker in pairs(global["speaker_cache"]) do
-            if element.name == format_guielement_name("alerts_list_icons_", speaker.surface, speaker.position) then
-                player.open_map(speaker.position, ZOOM_LEVEL)
-                break
+    if element and player then
+        if starts_with(element.name, "alerts_list_icons_") then
+            for k, speaker in pairs(global["speaker_cache"]) do
+                if speaker then 
+                    if element.name == format_guielement_name("alerts_list_icons_", speaker.surface, speaker.position) then
+                        player.open_map(speaker.position, ZOOM_LEVEL)
+                        break
+                    end
+                end
             end
         end
     end
