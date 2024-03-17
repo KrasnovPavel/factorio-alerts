@@ -151,12 +151,34 @@ function on_click(element, player)
             for k, speaker in pairs(global["speaker_cache"]) do
                 if speaker then 
                     if element.name == format_guielement_name("alerts_list_icons_", speaker.surface, speaker.position) then
-                        player.open_map(speaker.position, ZOOM_LEVEL)
+                        open_map(speaker, player, element.name)
                         break
                     end
                 end
             end
         end
+    end
+end
+
+function open_map(speaker, player, name)
+    if game.active_mods["space-exploration"] ~= nil then
+        local zone = remote.call("space-exploration", "get_zone_from_surface_index",
+            { surface_index = speaker.surface.index })
+        if not zone then
+            player.print { "AlertList2-spaceexploration-zone-unavailable" }
+            return
+        end
+        player.close_map()
+        remote.call("space-exploration", "remote_view_start",
+            {
+                player = player,
+                zone_name = zone.name,
+                position = speaker.position,
+                location_name = name,
+                freeze_history = true
+            })
+    else
+        player.open_map(speaker.position, ZOOM_LEVEL)
     end
 end
 
